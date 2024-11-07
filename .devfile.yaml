@@ -1,0 +1,14 @@
+schemaVersion: 2.2.0
+metadata:
+  name: empty-wnuk
+  namespace: che-kube-admin-devspaces-4m78o2
+components:
+  - name: universal-developer-image
+    container:
+      image: registry.redhat.io/devspaces/udi-rhel8@sha256:9199796c9dd82a16ebb2c4ff8d06b9727f392eb93eb7ffa2974ad6c16e3d8e5d
+      command:
+        - /bin/sh
+        - -c
+        - |
+          microdnf install -y git go && \
+          GO111MODULE=on go install github.com/operator-framework/operator-sdk/cmd/operator-sdk@latest
