@@ -14,7 +14,7 @@ components:
 
 commands:
   - id: install-operator-sdk
-    exec:
+    apply:
       component: universal-developer-image
       commandLine: |
         mkdir -p /home/user/.local/bin && \
@@ -22,9 +22,6 @@ commands:
         chmod +x /home/user/.local/bin/operator-sdk && \
         echo "operator-sdk installed successfully at /home/user/.local/bin/operator-sdk"
       workingDir: /home/user
-      group:
-        kind: build
-        isDefault: true
 
 events:
   preStart:
