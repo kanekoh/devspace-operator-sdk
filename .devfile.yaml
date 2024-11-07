@@ -13,8 +13,8 @@ components:
           value: "/home/user/.local/bin:${PATH}"
 
 commands:
-  - id: install-operator-sdk
-    apply:
+  - id: install-operator-sdk-exec
+    exec:
       component: universal-developer-image
       commandLine: |
         mkdir -p /home/user/.local/bin && \
@@ -22,6 +22,15 @@ commands:
         chmod +x /home/user/.local/bin/operator-sdk && \
         echo "operator-sdk installed successfully at /home/user/.local/bin/operator-sdk"
       workingDir: /home/user
+      group:
+        kind: build
+        isDefault: true
+
+  - id: install-operator-sdk
+    composite:
+      commands:
+        - install-operator-sdk-exec
+      parallel: false
 
 events:
   preStart:
