@@ -1,17 +1,31 @@
 schemaVersion: 2.2.0
 metadata:
-  name: empty-wnuk
-  namespace: che-kube-admin-devspaces-4m78o2
+  name: customize-workspace
+  description: DevFile for setting up operator-sdk on Linux (amd64)
 components:
   - name: universal-developer-image
     container:
       image: registry.redhat.io/devspaces/udi-rhel8@sha256:9199796c9dd82a16ebb2c4ff8d06b9727f392eb93eb7ffa2974ad6c16e3d8e5d
-      command:
-        - /bin/bash
-        - -c
-        - |
-          # operator-sdk のバイナリを /home/user/.local/bin にインストール
-          mkdir -p /home/user/.local/bin
-          curl -L https://github.com/operator-framework/operator-sdk/releases/download/v1.25.0/operator-sdk_linux_amd64 -o /home/user/.local/bin/operator-sdk
-          chmod +x /home/user/.local/bin/operator-sdk
-          echo "operator-sdk installed to /home/user/.local/bin"
+      memoryLimit: 512Mi
+      mountSources: true
+      env:
+        - name: PATH
+          value: "/home/user/.local/bin:${PATH}"
+
+commands:
+  - id: install-operator-sdk
+    exec:
+      component: universal-developer-image
+      commandLine: |
+        mkdir -p /home/user/.local/bin && \
+        curl -L https://github.com/operator-framework/operator-sdk/releases/download/v1.25.0/operator-sdk_linux_amd64 -o /home/user/.local/bin/operator-sdk && \
+        chmod +x /home/user/.local/bin/operator-sdk && \
+        echo "operator-sdk installed successfully at /home/user/.local/bin/operator-sdk"
+      workingDir: /home/user
+      group:
+        kind: build
+        isDefault: true
+
+events:
+  preStart:
+    - install-operator-sdk
