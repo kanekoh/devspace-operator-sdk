@@ -21,4 +21,4 @@ components:
 
           # install the release binary
           mkdir -p /home/user/.local/bin
-          chmod +x operator-sdk_${OS}_${ARCH} && sudo mv operator-sdk_${OS}_${ARCH} /home/user/.local/bin
+          chmod +x operator-sdk_${OS}_${ARCH} && mv operator-sdk_${OS}_${ARCH} /home/user/.local/bin/operator-sdk
