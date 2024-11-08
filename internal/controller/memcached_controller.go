@@ -19,18 +19,24 @@ package controller
 import (
 	"context"
 
+	cachev1alpha1 "example.com/user/memcached/api/v1alpha1"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
-
-	cachev1alpha1 "example.com/user/memcached/api/v1alpha1"
 )
 
 // MemcachedReconciler reconciles a Memcached object
 type MemcachedReconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
+	Scheme   *runtime.Scheme
+	Recorder record.EventRecorder
 }
 
 //+kubebuilder:rbac:groups=cache.example.com,resources=memcacheds,verbs=get;list;watch;create;update;patch;delete
@@ -48,7 +54,7 @@ type MemcachedReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.17.3/pkg/reconcile
 func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	log := log.FromContext(ctx)
 
 	// TODO(user): your logic here
 	memcached := &cachev1alpha1.Memcached{}
@@ -63,11 +69,11 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 
 	found := &appsv1.Deployment{}
 	err = r.Get(ctx, types.NamespacedName{Name: memcached.Name, Namespace: memcached.Namespace}, found)
-	if err != nil && erros.IsNotFound(err) {
+	if err != nil && errors.IsNotFound(err) {
 		// 新規作成
 
 		dep := r.deploymentForMemcached(memcached)
-		log.Info("creating a new Deployment", "Deploment Namespace", dep.Namepsace, "Deployment.Name", dep.Name)
+		log.Info("creating a new Deployment", "Deploment Namespace", dep.Namespace, "Deployment.Name", dep.Name)
 	} else if err != nil {
 		// 取得できないエラー
 
@@ -79,7 +85,7 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	size := memcached.Spec.Size
 	if *found.Spec.Replicas != size {
 		found.Spec.Replicas = &size
-		// https://github.com/kubernetes/api/blob/master/apps/v1/types.go#L381 
+		// https://github.com/kubernetes/api/blob/master/apps/v1/types.go#L381
 
 		err = r.Update(ctx, found)
 		if err != nil {
@@ -90,7 +96,6 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		// 正常にDeploymentがアップデートされる
 		return ctrl.Result{Requeue: true}, nil
 	}
-
 
 	// 正常終了
 	return ctrl.Result{}, nil
@@ -138,7 +143,10 @@ func (r *MemcachedReconciler) deploymentForMemcached(m *cachev1alpha1.Memcached)
 		},
 	}
 	// Set Memcached instance as the owner and controller
-	ctrl.SetControllerReference(m, dep, r.Scheme)
+	err := ctrl.SetControllerReference(m, dep, r.Scheme)
+	if err != nil {
+		return nil
+	}
 	return dep
 }
 
