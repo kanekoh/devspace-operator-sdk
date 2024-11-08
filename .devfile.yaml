@@ -8,18 +8,3 @@ components:
       image: quay.io/kanekoh/udi-operatorsdk:latest
       memoryLimit: 4Gi
       mountSources: true
-  - name: cacert
-    kubernetes:
-      inlined:
-        apiVersion: v1
-        kind: ConfigMap
-        metadata:
-          annotations:
-            service.beta.openshift.io/inject-cabundle: "true"
-            controller.devfile.io/mount-path: /etc/pki/ca-trust/source/anchors/
-            controller.devfile.io/mount-as: subpath
-          labels:
-            controller.devfile.io/mount-to-devworkspace: "true"
-            controller.devfile.io/watch-configmap: "true"
-        name: cacert
-        data: {}
