@@ -11,3 +11,10 @@ components:
       env:
       - name: SSL_CERT_DIR
         value: /var/run/secrets/kubernetes.io/serviceaccount
+
+commands:
+  - id: podman-login
+    exec:
+      component: universal-developer-image
+      commandLine: podman login -u `oc whoami` -p `oc whoami -t`  image-registry.openshift-image-registry.svc.cluster.local:5000/`oc config get-contexts --no-headers | awk '{print $5}'`
+      workingDir: $PROJECT_SOURCE
