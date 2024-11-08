@@ -8,3 +8,6 @@ components:
       image: quay.io/kanekoh/udi-operatorsdk:latest
       memoryLimit: 4Gi
       mountSources: true
+      env:
+      - name: SSL_CERT_DIR
+        value: /var/run/secrets/kubernetes.io/serviceaccount
