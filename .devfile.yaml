@@ -1,0 +1,10 @@
+schemaVersion: 2.2.0
+metadata:
+  name: customize-workspace
+  description: DevFile for setting up operator-sdk on Linux (amd64)
+components:
+  - name: universal-developer-image
+    container:
+      image: quay.io/kanekoh/udi-operatorsdk:latest
+      memoryLimit: 512Mi
+      mountSources: true
