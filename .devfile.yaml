@@ -6,5 +6,5 @@ components:
   - name: universal-developer-image
     container:
       image: quay.io/kanekoh/udi-operatorsdk:latest
-      memoryLimit: 512Mi
+      memoryLimit: 4Gi
       mountSources: true
