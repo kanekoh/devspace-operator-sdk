@@ -1,5 +1,5 @@
 # Adds namespace to all resources.
-namespace: devspace-operator-sdk-system
+namespace: che-kube-admin-devspaces-4m78o2
 
 # Value of this field is prepended to the
 # names of all resources, e.g. a deployment named
