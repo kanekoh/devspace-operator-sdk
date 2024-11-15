@@ -1,2 +1,8 @@
 resources:
 - manager.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+images:
+- name: controller
+  newName: image-registry.openshift-image-registry.svc.cluster.local:5000/che-kube-admin-devspaces-4m78o2/memcached-operator
+  newTag: 0.0.1
