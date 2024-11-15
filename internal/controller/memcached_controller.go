@@ -74,6 +74,7 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 
 		dep := r.deploymentForMemcached(memcached)
 		log.Info("creating a new Deployment", "Deploment Namespace", dep.Namespace, "Deployment.Name", dep.Name)
+		return ctrl.Result{Requeue: true}, nil
 	} else if err != nil {
 		// 取得できないエラー
 
