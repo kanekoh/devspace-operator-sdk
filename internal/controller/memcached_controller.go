@@ -93,6 +93,7 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		found.Spec.Replicas = &size
 		// https://github.com/kubernetes/api/blob/master/apps/v1/types.go#L381
 
+		log.Info("creating a new Deployment", "Deploment Namespace", found.Namespace, "Deployment.Name", found.Name)
 		err = r.Update(ctx, found)
 		if err != nil {
 			log.Error(err, "Failed to update Deployment", "Deployment.Namespace", found.Namespace, "Deployment.Name", found.Name)
