@@ -45,7 +45,8 @@ spec:
                 type: string
               size:
                 format: int32
-                minimum: 0
+                maximum: 5
+                minimum: 1
                 type: integer
             required:
             - size

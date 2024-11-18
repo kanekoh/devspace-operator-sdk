@@ -18,6 +18,7 @@ package controller
 
 import (
 	"context"
+	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -25,6 +26,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
+	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	cachev1alpha1 "example.com/user/memcached/api/v1alpha1"
@@ -38,7 +40,7 @@ var _ = Describe("Memcached Controller", func() {
 
 		typeNamespacedName := types.NamespacedName{
 			Name:      resourceName,
-			Namespace: "default", // TODO(user):Modify as needed
+			Namespace: "default",
 		}
 		memcached := &cachev1alpha1.Memcached{}
 
@@ -51,7 +53,9 @@ var _ = Describe("Memcached Controller", func() {
 						Name:      resourceName,
 						Namespace: "default",
 					},
-					// TODO(user): Specify other spec details if needed.
+					Spec: cachev1alpha1.MemcachedSpec{
+						Size: 1,
+					},
 				}
 				Expect(k8sClient.Create(ctx, resource)).To(Succeed())
 			}
@@ -77,8 +81,64 @@ var _ = Describe("Memcached Controller", func() {
 				NamespacedName: typeNamespacedName,
 			})
 			Expect(err).NotTo(HaveOccurred())
-			// TODO(user): Add more specific assertions depending on your controller's reconciliation logic.
-			// Example: If you expect a certain status condition after reconciliation, verify it here.
+
+			// Deployment が作成されていることを確認
+			By("Checking if Deployment was successfully created in the reconciliation")
+			Eventually(func() error {
+				found := &appsv1.Deployment{}
+				return k8sClient.Get(ctx, typeNamespacedName, found)
+			}, time.Minute, time.Second).Should(Succeed())
 		})
+	})
+
+	Context("When defining a resource", func() {
+		const resourceName = "test-resource"
+
+		ctx := context.Background()
+
+		typeNamespacedName := types.NamespacedName{
+			Name:      resourceName,
+			Namespace: "default",
+		}
+		memcached := &cachev1alpha1.Memcached{}
+
+		It("should fail when size exceeds the maximum value", func() {
+			err := k8sClient.Get(ctx, typeNamespacedName, memcached)
+			if err != nil && errors.IsNotFound(err) {
+				resource := &cachev1alpha1.Memcached{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      resourceName,
+						Namespace: "default",
+					},
+					Spec: cachev1alpha1.MemcachedSpec{
+						Size: 6,
+					},
+				}
+				err := k8sClient.Create(ctx, resource)
+
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("spec.size in body should be less than or equal to 5"))
+			}
+		})
+
+		It("should fail when size is less than the minimum value", func() {
+			err := k8sClient.Get(ctx, typeNamespacedName, memcached)
+			if err != nil && errors.IsNotFound(err) {
+				resource := &cachev1alpha1.Memcached{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      resourceName,
+						Namespace: "default",
+					},
+					Spec: cachev1alpha1.MemcachedSpec{
+						Size: 0,
+					},
+				}
+				err := k8sClient.Create(ctx, resource)
+
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("spec.size in body should be greater than or equal to 1"))
+			}
+		})
+
 	})
 })

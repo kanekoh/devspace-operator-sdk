@@ -32,7 +32,8 @@ type MemcachedSpec struct {
 	Foo string `json:"foo,omitempty"`
 
 	// +kubebuilder:validation:Required
-	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Minimum=1
+	// +kubebuilder:validation:Maximum=5
 	Size int32 `json:"size"`
 }
 
