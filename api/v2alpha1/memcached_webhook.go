@@ -18,11 +18,11 @@ package v2alpha1
 
 import (
 	ctrl "sigs.k8s.io/controller-runtime"
-	logf "sigs.k8s.io/controller-runtime/pkg/log"
+	// logf "sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 // log is for logging in this package.
-var memcachedlog = logf.Log.WithName("memcached-resource")
+// var memcachedlog = logf.Log.WithName("memcached-resource")
 
 // SetupWebhookWithManager will setup the manager to manage the webhooks
 func (r *Memcached) SetupWebhookWithManager(mgr ctrl.Manager) error {

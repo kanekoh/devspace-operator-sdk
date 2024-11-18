@@ -23,9 +23,8 @@ import (
 var _ = Describe("Memcached Webhook", func() {
 
 	Context("When creating Memcached under Conversion Webhook", func() {
-		It("Should get the converted version of Memcached", func() {
 
-			// TODO(user): Add your logic here
+		It("Should get the converted version of Memcached", func() {
 
 		})
 	})
