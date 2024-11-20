@@ -7,12 +7,17 @@ components:
     container:
       image: quay.io/kanekoh/udi-operatorsdk:latest
       memoryLimit: 4Gi
+      memoryRequest: 3Gi
       mountSources: true
       env:
       - name: SSL_CERT_DIR
         value: /var/run/secrets/kubernetes.io/serviceaccount
       - name: GO111MODULE
         value: "on"
+      - name: CONTAINER_TOOL
+        value: podman
+      - name: VERSION
+        value: "1.0"
 
 commands:
   - id: podman-login
