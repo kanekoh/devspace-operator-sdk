@@ -11,6 +11,8 @@ components:
       env:
       - name: SSL_CERT_DIR
         value: /var/run/secrets/kubernetes.io/serviceaccount
+      - name: GO111MODULE
+        value: on
 
 commands:
   - id: podman-login
