@@ -46,7 +46,6 @@ type MemcachedStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 // +kubebuilder:storageversion
-// +kubebuilder:metadata:annotations="service.beta.openshift.io/inject-cabundle=true"
 
 // Memcached is the Schema for the memcacheds API
 type Memcached struct {
