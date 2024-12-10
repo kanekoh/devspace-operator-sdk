@@ -96,48 +96,36 @@ var _ = Describe("Memcached Controller", func() {
 
 		ctx := context.Background()
 
-		typeNamespacedName := types.NamespacedName{
-			Name:      resourceName,
-			Namespace: "default",
-		}
-		memcached := &cachev1alpha1.Memcached{}
-
 		It("should fail when size exceeds the maximum value", func() {
-			err := k8sClient.Get(ctx, typeNamespacedName, memcached)
-			if err != nil && errors.IsNotFound(err) {
-				resource := &cachev1alpha1.Memcached{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      resourceName,
-						Namespace: "default",
-					},
-					Spec: cachev1alpha1.MemcachedSpec{
-						Size: 6,
-					},
-				}
-				err := k8sClient.Create(ctx, resource)
-
-				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(ContainSubstring("spec.size in body should be less than or equal to 5"))
+			resource := &cachev1alpha1.Memcached{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      resourceName,
+					Namespace: "default",
+				},
+				Spec: cachev1alpha1.MemcachedSpec{
+					Size: 6,
+				},
 			}
+			err := k8sClient.Create(ctx, resource)
+
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("spec.size in body should be less than or equal to 5"))
 		})
 
 		It("should fail when size is less than the minimum value", func() {
-			err := k8sClient.Get(ctx, typeNamespacedName, memcached)
-			if err != nil && errors.IsNotFound(err) {
-				resource := &cachev1alpha1.Memcached{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      resourceName,
-						Namespace: "default",
-					},
-					Spec: cachev1alpha1.MemcachedSpec{
-						Size: 0,
-					},
-				}
-				err := k8sClient.Create(ctx, resource)
-
-				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(ContainSubstring("spec.size in body should be greater than or equal to 1"))
+			resource := &cachev1alpha1.Memcached{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      resourceName,
+					Namespace: "default",
+				},
+				Spec: cachev1alpha1.MemcachedSpec{
+					Size: 0,
+				},
 			}
+			err := k8sClient.Create(ctx, resource)
+
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("spec.size in body should be greater than or equal to 1"))
 		})
 
 	})

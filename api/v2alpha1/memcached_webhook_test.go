@@ -18,6 +18,13 @@ package v2alpha1
 
 import (
 	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
+	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/types"
+
+	// appsv1 "k8s.io/api/apps/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var _ = Describe("Memcached Webhook", func() {
@@ -45,9 +52,38 @@ var _ = Describe("Memcached Webhook", func() {
 	})
 
 	Context("When creating Memcached under Conversion Webhook", func() {
+		const resourceName = "test-resource"
+
+		typeNamespacedName := types.NamespacedName{
+			Name:      resourceName,
+			Namespace: "default",
+		}
+		memcached := &Memcached{}
+
+		BeforeEach(func() {
+			By("creating the custom resource for the Kind Memcached")
+			err := k8sClient.Get(ctx, typeNamespacedName, memcached)
+			if err != nil && errors.IsNotFound(err) {
+				resource := &Memcached{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      resourceName,
+						Namespace: "default",
+					},
+					Spec: MemcachedSpec{
+						ReplicaSize: 1,
+					},
+				}
+				Expect(k8sClient.Create(ctx, resource)).To(Succeed())
+			}
+		})
+
 		It("Should get the converted version of Memcached", func() {
+			resource := &Memcached{}
+			err := k8sClient.Get(ctx, typeNamespacedName, resource)
+			Expect(err).NotTo(HaveOccurred())
 
 			// TODO(user): Add your logic here
+			Expect(resource.Spec.ReplicaSize).Should(Equal(int32(1)))
 
 		})
 	})
