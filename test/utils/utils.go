@@ -115,6 +115,12 @@ func LoadImageToKindClusterWithName(name string) error {
 	return err
 }
 
+func LoadImageToOCPClusterWithName(name string) error {
+	cmd := exec.Command("make", "docker-push", fmt.Sprintf("IMG=%s", name))
+	_, err := Run(cmd)
+	return err
+}
+
 // GetNonEmptyLines converts given command output string into individual objects
 // according to line breakers, and ignores the empty elements in it.
 func GetNonEmptyLines(output string) []string {

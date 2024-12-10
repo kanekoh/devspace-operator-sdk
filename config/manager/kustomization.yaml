@@ -4,5 +4,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 images:
 - name: controller
-  newName: image-registry.openshift-image-registry.svc.cluster.local:5000/che-kube-admin-devspaces-8ee52w/memcached-operator
-  newTag: "1.0"
+  newName: image-registry.openshift-image-registry.svc.cluster.local:5000/devspace-operator-sdk-hkaneko/devspace-operator-sdk
+  newTag: v0.0.1

@@ -27,15 +27,16 @@ import (
 	"example.com/user/memcached/test/utils"
 )
 
-const namespace = "devspace-operator-sdk-system"
+const namespace = "devspace-operator-sdk-hkaneko"
 
 var _ = Describe("controller", Ordered, func() {
 	BeforeAll(func() {
-		By("installing prometheus operator")
-		Expect(utils.InstallPrometheusOperator()).To(Succeed())
+		// Prometheus/CertManager は事前に環境にインストールしておくこと
+		// By("installing prometheus operator")
+		// Expect(utils.InstallPrometheusOperator()).To(Succeed())
 
-		By("installing the cert-manager")
-		Expect(utils.InstallCertManager()).To(Succeed())
+		// By("installing the cert-manager")
+		// Expect(utils.InstallCertManager()).To(Succeed())
 
 		By("creating manager namespace")
 		cmd := exec.Command("kubectl", "create", "ns", namespace)
@@ -43,11 +44,11 @@ var _ = Describe("controller", Ordered, func() {
 	})
 
 	AfterAll(func() {
-		By("uninstalling the Prometheus manager bundle")
-		utils.UninstallPrometheusOperator()
+		// By("uninstalling the Prometheus manager bundle")
+		// utils.UninstallPrometheusOperator()
 
-		By("uninstalling the cert-manager bundle")
-		utils.UninstallCertManager()
+		// By("uninstalling the cert-manager bundle")
+		// utils.UninstallCertManager()
 
 		By("removing manager namespace")
 		cmd := exec.Command("kubectl", "delete", "ns", namespace)
@@ -60,7 +61,7 @@ var _ = Describe("controller", Ordered, func() {
 			var err error
 
 			// projectimage stores the name of the image used in the example
-			var projectimage = "example.com/devspace-operator-sdk:v0.0.1"
+			var projectimage = "image-registry.openshift-image-registry.svc.cluster.local:5000/" + namespace + "/devspace-operator-sdk:v0.0.1"
 
 			By("building the manager(Operator) image")
 			cmd := exec.Command("make", "docker-build", fmt.Sprintf("IMG=%s", projectimage))
@@ -68,7 +69,7 @@ var _ = Describe("controller", Ordered, func() {
 			ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
 			By("loading the the manager(Operator) image on Kind")
-			err = utils.LoadImageToKindClusterWithName(projectimage)
+			err = utils.LoadImageToOCPClusterWithName(projectimage)
 			ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
 			By("installing CRDs")
